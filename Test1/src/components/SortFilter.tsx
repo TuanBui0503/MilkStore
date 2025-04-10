@@ -11,12 +11,19 @@ export default function SortFilter() {
 
   const handleFilter = (value: string) => {
     setFilter(value)
+    let filterList = []
     if (value === 'all') {
-      setNewList(milkProducts)
+      filterList = milkProducts
     } else {
-      const productFilter = milkProducts.filter((i) => i.loại === value)
-      setNewList(productFilter)
+      filterList = milkProducts.filter((i) => i.loại === value)
     }
+    if (sort === "low") {
+      filterList.sort((a, b) => a.price - b.price)
+    }
+    if (sort === "hight") {
+      filterList.sort((a, b) => b.price - a.price)
+    }
+    setNewList(filterList)
   }
 
   const handleSort = (value: string) => {

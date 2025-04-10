@@ -1,29 +1,65 @@
+import { useState } from "react"
+
 export default function Store({ store }) {
-  const total = store.reduce((sum, item) => sum + Number(item.price), 0)
+  store.forEach((item) => {
+    if (!item.quantity) {
+      item.quantity = 1
+    }
+  })
+
+  const [quantities, setQuantities] = useState(
+    store.map((item) => item.quantity)
+  )
+
+  const handleQuantityChange = (index, value) => {
+    const newQuantities = [...quantities]
+    newQuantities[index] = Number(value)
+    setQuantities(newQuantities)
+  }
+
+  const total = store.reduce(
+    (sum, item, index) => sum + item.price * quantities[index],
+    0
+  )
 
   return (
-    <div className="shadow-lg pt-5 p-6 bg-white rounded-2xl w-full mx-auto border-t mt-10">
-      <h2 className="text-2xl font-bold mb-6 text-center">Giỏ hàng </h2>
+    <div className="mt-10 p-6 border rounded-xl shadow bg-white">
+      <h2 className="text-xl font-bold mb-4">Giỏ hàng</h2>
 
-      <div className="space-y-6">
-        {store.map((item, index) => (
-          <div
-            key={index}
-            className="flex justify-between items-center border-b pb-4"
-          >
-            <div>
-              <h3 className="font-semibold text-lg">{item.name}</h3>
-              <p className="text-sm text-gray-500 mb-2">
-                Đơn giá: {item.price} đ
-              </p>
+      {store.length === 0 ? (
+        <p className="text-gray-500">Chưa có sản phẩm nào</p>
+      ) : (
+        <div className="space-y-4">
+          {store.map((item, index) => (
+            <div
+              key={index}
+              className="flex justify-between items-center border-b pb-2"
+            >
+              <div>
+                <p className="font-semibold">{item.name}</p>
+                <p className="text-sm text-gray-500">
+                  Đơn giá: {item.price} đ
+                </p>
+                <input
+                  type="number"
+                  min="1"
+                  value={quantities[index]}
+                  onChange={(e) =>
+                    handleQuantityChange(index, e.target.value)
+                  }
+                  className="border rounded px-2 py-1 w-20 mt-1"
+                />
+              </div>
+              <div className="font-bold">
+                {item.price * quantities[index]} đ
+              </div>
             </div>
-            <div className="text-right font-bold text-base">{item.price} đ</div>
+          ))}
+          <div className="text-right font-bold text-green-600 mt-4">
+            Thành tiền: {total} đ
           </div>
-        ))}
-        <div className="pt-6 text-right text-xl font-bold text-green-600">
-          Thành tiền: {total} đ
         </div>
-      </div>
+      )}
     </div>
   )
 }
